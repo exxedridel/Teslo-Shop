@@ -31,4 +31,9 @@ export class CreateProductDto {
     @IsIn(['men', 'women', 'kid', 'unisex'])
     gender: string;
 
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional() // ya que tenemos un valor default en la entity, es decir, un areglo vácio: [] 
+    tags?: string[];
+
 }
