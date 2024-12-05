@@ -69,7 +69,17 @@ export class ProductsService {
     if ( isUUID(term )) {
       product = await this.productRepository.findOneBy({ id: term })
     } else {
-      product = await this.productRepository.findOneBy({ slug: term })
+      // product = await this.productRepository.findOneBy({ slug: term })
+
+      // *Contra inyección de consultas (SQL Injection) ya que se usa parametrización y los valores que se asignen se escapan automáticamente
+      const queryBuilder = this.productRepository.createQueryBuilder();
+      product = await queryBuilder
+        .where(`LOWER(title) = :title or slug =:slug`, { // ej. de como convertir a Upper en el query de postgres
+          title: term.toUpperCase(),  // aca hacerlo coincidir. O se puede así, sin tener que modificar el term `.where(`LOWER(title) = LOWER(:title) or slug =:slug`, {`
+          slug: term,
+        }).getOne()
+
+      // `select * from Products where slug='xxxx' or title='xxxx'`  // es como hacer esto pero de manera segura 
     }
 
     // NotFound
