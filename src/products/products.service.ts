@@ -44,12 +44,15 @@ export class ProductsService {
 
   }
 
-  // To Do: paginar
   findAll( paginationDto: PaginationDto) {
 
+    // si no vienen los valores en los params, estos se pondrán por defecto
     const { limit = 10, offset = 0 } = paginationDto;
 
     console.log(paginationDto)
+    // los valores predeterminados que se definen en la desestructuración no alteran el objeto original (paginationDto). 
+    // Los valores predeterminados solo afectan las variables se obtienen durante la desestructuración, no añaden 
+    // propiedades al objeto.
 
     return this.productRepository.find({
       take: limit,
