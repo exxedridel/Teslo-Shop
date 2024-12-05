@@ -45,7 +45,7 @@ export class ProductsService {
 
   }
 
-  findAll( paginationDto: PaginationDto) {
+  findAll(paginationDto: PaginationDto) {
 
     // si no vienen los valores en los params, estos se pondrán por defecto
     const { limit = 10, offset = 0 } = paginationDto;
@@ -64,20 +64,16 @@ export class ProductsService {
 
   async findOne(term: string) {
 
-    let product;
+    let product: Product;
 
-    // by UUID
-    if ( !product && isUUID(term)) {
-      product = await this.productRepository.findBy({id: term})
+    if ( isUUID(term )) {
+      product = await this.productRepository.findOneBy({ id: term })
+    } else {
+      product = await this.productRepository.findOneBy({ slug: term })
     }
 
-    // by Slug
-     if (!product) {
-      product = await this.productRepository.findBy({ slug: term })
-    } // .toLowerCase().trim()
-
     // NotFound
-    if (!product) throw new NotFoundException(`Product with id or slug: ${term} is not found`)
+    if (!product) throw new NotFoundException(`Product with: ${term} is not found`)
 
     return product;
   }
