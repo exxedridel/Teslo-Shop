@@ -34,6 +34,12 @@ export class CreateProductDto {
     @IsArray()
     @IsString({ each: true })
     @IsOptional() // ya que tenemos un valor default en la entity, es decir, un areglo vácio: [] 
-    tags?: string[];
+    tags: string[];
+
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    images?: string[];
+    
 
 }
