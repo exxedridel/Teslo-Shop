@@ -6,16 +6,14 @@ export class PaginationDto {
 
     @IsOptional()
     @IsPositive()
-    // se puede trasformar con validationPipe en app file como en Pokedex API
-    @Type(()=> Number) // aqui emulamos enableImplicitConversions: true
+    // se puede trasformar el string recibido por el param a number con validationPipe en app file como en Pokedex API
+    @Type(()=> Number) // pero aqui emulamos enableImplicitConversions: true
     limit?: number;
 
 
     @IsOptional()
-    @IsPositive()
     @Min(0)
-    // se puede trasformar con validationPipe en app file como en Pokedex API
-    @Type(()=> Number) // aqui emulamos enableImplicitConversions: true
+    @Type(()=> Number) // pero aqui emulamos enableImplicitConversions: true
     offset?: number;
 
 }

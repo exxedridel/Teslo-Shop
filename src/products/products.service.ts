@@ -46,7 +46,16 @@ export class ProductsService {
 
   // To Do: paginar
   findAll( paginationDto: PaginationDto) {
-    return this.productRepository.find({});
+
+    const { limit = 10, offset = 0 } = paginationDto;
+
+    console.log(paginationDto)
+
+    return this.productRepository.find({
+      take: limit,
+      skip: offset,
+      // TODO: relaciones
+    });
   }
 
   async findOne(id: string) {
