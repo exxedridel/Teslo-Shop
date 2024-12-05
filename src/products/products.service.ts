@@ -66,7 +66,7 @@ export class ProductsService {
 
     let product: Product;
 
-    if ( isUUID(term )) {
+    if (isUUID(term)) {
       product = await this.productRepository.findOneBy({ id: term })
     } else {
       // product = await this.productRepository.findOneBy({ slug: term })
@@ -88,16 +88,33 @@ export class ProductsService {
     return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+
+    const product = await this.productRepository.preload({
+      id: id,
+      ...updateProductDto
+    })
+
+    if (!product) throw new NotFoundException(`Product with id: ${id} is not found`)
+
+    try {
+
+      await this.productRepository.save(product)
+      return product;
+
+    } catch (error) {
+      this.handleDBExceptions(error)
+    }
+
   }
 
   async remove(id: string) {
-    const { affected } = await this.productRepository.delete({ id })
-    // this.productRepository.remove({ id }) // se usa este cuando se procederá a borrar por registro (buscándolo previamente findAlgo())
+    // aqui se reutiliza la consulta de findOne, si no encuentra un UUID mandará su NotFoundException
+    const product = await this.findOne( id );
+    // pero esto resultará en ejecutar esta segunda consulta
+    await this.productRepository.remove( product) ;
 
-    if (affected === 0) throw new BadRequestException(`Product with id: ${id} is not found`)
-    return `Product with id: ${id} successfully deleted`;
+    return `Product with id: ${id} was successfully deleted`;
   }
 
 
