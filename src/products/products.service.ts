@@ -95,11 +95,11 @@ export class ProductsService {
   }
 
   // funcion intermedia para regresar objeto exactamente como se desea, de esta manera, no afectar la funcionalidad de la funcion remove
-  async findOnePlain( term: string) {
-    const { images = [], ...rest} = await this.findOne( term);
+  async findOnePlain(term: string) {
+    const { images = [], ...rest } = await this.findOne(term);
     return {
       ...rest,
-      imgaes: images.map( image=> image.url)
+      imgaes: images.map(image => image.url)
     }
   }
 
@@ -107,20 +107,42 @@ export class ProductsService {
 
     const { images, ...toUpdate } = updateProductDto;
 
-    const product = await this.productRepository.preload({id, ...toUpdate,})
+    const product = await this.productRepository.preload({ id, ...toUpdate, })
 
     if (!product) throw new NotFoundException(`Product with id: ${id} is not found`)
 
+    // transaction: serie de queries que pueden impactar la base de datos, actualizar, eliminar, insertar
+    // pero que se ejecuta hasta que se hace un commit a la base de datos, si no se llama al commit o se quita la conexión no impacta la base
     const queryRunner = this.dataSource.createQueryRunner();
-    
-
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
     try {
 
-      await this.productRepository.save(product)
-      return product;
+      if (images) {
+        await queryRunner.manager.delete(ProductImage, { product: { id } });
+
+        product.images = images.map(
+          image => this.productImageRepository.create({ url: image })
+        )
+      } else {
+        // ??? tambien se pudiera hacer aqui
+        // product.images ???
+      }
+
+      await queryRunner.manager.save(product);
+      // await this.productRepository.save(product)
+
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      return this.findOnePlain(id);
 
     } catch (error) {
+
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
+
       this.handleDBExceptions(error)
     }
 
