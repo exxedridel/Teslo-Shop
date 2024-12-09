@@ -15,6 +15,8 @@ export class ProductImage {
     @ManyToOne(
         ()=> Product,
         product => product.images,
+        // Se habilita borrar en cascada para afectar a las multiples tablas involucradas de una por una
+        { onDelete: 'CASCADE' }
     )
     product: Product
 

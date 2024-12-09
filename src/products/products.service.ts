@@ -156,6 +156,21 @@ export class ProductsService {
     return `Product with id: ${id} was successfully deleted`;
   }
 
+  // Funcion que puede ayudar para ejecutarse solo en QA
+  async deleteAllProducts() {
+    const query = this.productRepository.createQueryBuilder('product');
+
+    try {
+      return await query
+        .delete()
+        .where({})
+        .execute();
+
+    } catch (error) {
+      this.handleDBExceptions(error)
+    }
+  }
+
 
   private handleDBExceptions(error: any) {
     if (error.code === '23505')
