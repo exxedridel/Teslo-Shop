@@ -156,7 +156,7 @@ export class ProductsService {
     return `Product with id: ${id} was successfully deleted`;
   }
 
-  // Funcion que puede ayudar para ejecutarse solo en QA
+  // Función que puede ayudar para usarse solo en QA, la ejecutamos desde seed.service (imports y exports respectivos) y borra todos los productos con sus imágenes 
   async deleteAllProducts() {
     const query = this.productRepository.createQueryBuilder('product');
 
@@ -165,6 +165,7 @@ export class ProductsService {
         .delete()
         .where({})
         .execute();
+        // esto no es una transaction, borrará todos los productos y sus relaciones
 
     } catch (error) {
       this.handleDBExceptions(error)

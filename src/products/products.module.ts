@@ -10,6 +10,8 @@ import { Product, ProductImage } from './entities';
   providers: [ProductsService],
   imports: [
     TypeOrmModule.forFeature([Product, ProductImage])
-  ]
+  ],
+  exports: [ ProductsService, TypeOrmModule ] // asi, cualquiera que importe ProductsModule tendrá acceso a este
+  // tambien se usa de una vez exportar el TypeOrmModule por cualquier operacion que se ocupe realizarle
 })
 export class ProductsModule { }
