@@ -6,7 +6,9 @@ export class User {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column('text')
+    @Column('text', {
+        unique: true
+    })
     email: string
 
     @Column('text')
@@ -15,12 +17,14 @@ export class User {
     @Column('text')
     fullName: string
 
-    @Column('boolean')
+    @Column('bool', {
+        default: true
+    })
     isActive: boolean
 
     @Column('text', {
         array: true,
-        default: []
+        default: ['user']
     })
     roles: string[]
 
