@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseFilePipe, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseFilePipe, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { fileFilter } from './helpers/fileFilter.helper';
 
 @Controller('files')
 export class FilesController {
@@ -8,12 +9,24 @@ export class FilesController {
 
   // servicio carga archivo con Express y agregando @types/multer
   @Post('product')
-  @UseInterceptors(FileInterceptor('file')) // p/ interceptar la coleccion de bytes que construyen la imagen (se guarda en un buffer)
+  @UseInterceptors(FileInterceptor('file', {
+    fileFilter: fileFilter
+  }))
   uploadProductImage(
     @UploadedFile() file: Express.Multer.File
   ) {
-    return file; // por defecto se guardda en una carpeta temporal
+
+    // `fileInController` viene vacio si no se validó en true por alguna de las condiciones del archivo fileFilter.helper
+    // console.log({ fileInController: file })
+
+    if (!file) {
+      throw new BadRequestException('File must be a supported image format')
+    }
+
+    return {
+      fileName: file?.originalname
+    };
   }
 
-  // servicio carga archivo con nestjs/common
+  // servicio carga archivo con Pipe del nestjs/common
 }
