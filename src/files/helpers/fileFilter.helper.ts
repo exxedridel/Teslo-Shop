@@ -2,7 +2,7 @@
 
 export const fileFilter = (req: Express.Request, file: Express.Multer.File, callback: Function) => {
 
-    console.log({file})
+    // console.log({file})
 
     // evaluar el archivo y si cumple las condiciones mandar `true` para que se mande el file en la 
     // propiedad fileInController del Interceptor de '@nestjs/platform-express'
