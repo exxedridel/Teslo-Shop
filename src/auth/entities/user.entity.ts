@@ -11,7 +11,9 @@ export class User {
     })
     email: string
 
-    @Column('text')
+    @Column('text', {
+        select: false // cuando se le aplica un QueryBuilder (ej findOneBy) no se devuelve el password
+    })
     password: string
 
     @Column('text')
