@@ -7,11 +7,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { User } from './entities/user.entity';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   imports: [
+
+    ConfigModule,
+
     TypeOrmModule.forFeature([User]),
 
     PassportModule.register({ defauktStrategy: 'jwt' }),
@@ -30,15 +34,7 @@ import { User } from './entities/user.entity';
         }
       }
     })
-
-    // esta manera no es syncrona, si no esta configurada la variable de entorno puede fallar, mejor se hace como arriba
-    // JwtModule.register({
-    //   secret: process.env.JWT_SECRET,
-    //   signOptions: {
-    //     expiresIn: '2h'
-    //   }
-    // })
   ],
-  exports: [TypeOrmModule]
+  exports: [TypeOrmModule, JwtStrategy, PassportModule, JwtModule]
 })
 export class AuthModule { }
